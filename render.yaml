@@ -1,0 +1,31 @@
+# Render Blueprint — one-click deploy for the Heal Scan API.
+#
+# To deploy: create a private GitHub repo, push this project, then on Render
+# pick "Blueprint" when creating a new service (or paste this repo URL into
+# https://dashboard.render.com/blueprint).
+#
+# Env vars marked sync:false are secrets — set them in the Render dashboard
+# after first deploy (Dashboard > your service > Environment).
+
+services:
+  - type: web
+    name: heal-scan-api
+    runtime: node
+    repo: https://github.com/USERNAME/heal-scan.git # optional: set your repo
+    plan: free
+    rootDir: heal-scan-server
+    buildCommand: npm install
+    startCommand: node src/server.js
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: OPENAI_API_KEY
+        sync: false # required — set in Render dashboard
+      - key: FIREBASE_PROJECT_ID
+        sync: false # optional — only if you enable cloud sync
+      - key: FIREBASE_SERVICE_ACCOUNT_JSON
+        sync: false # optional — entire Firebase service-account JSON
+      - key: PORT
+        value: 4000
+      - key: MAX_IMAGE_BYTES
+        value: 8000000
