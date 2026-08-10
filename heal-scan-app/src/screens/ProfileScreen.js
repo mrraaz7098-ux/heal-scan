@@ -150,6 +150,22 @@ export default function ProfileScreen() {
             <View style={styles.divider} />
 
             <SettingRow
+              icon="cloud-upload-outline"
+              color={colors.neonSky}
+              title="Sync scans to cloud"
+              subtitle="Back up history across devices"
+            >
+              <Switch
+                value={settings.syncEnabled === true}
+                onValueChange={(v) => toggleSetting('syncEnabled', v)}
+                trackColor={{ false: 'rgba(255,255,255,0.15)', true: '#00A3FF' }}
+                thumbColor="#fff"
+              />
+            </SettingRow>
+
+            <View style={styles.divider} />
+
+            <SettingRow
               icon="language-outline"
               color={colors.neonPurple}
               title="Language"

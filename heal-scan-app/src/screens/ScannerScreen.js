@@ -15,7 +15,7 @@ import * as Haptics from 'expo-haptics';
 import { LinearGradient } from 'expo-linear-gradient';
 import LoadingOverlay from '../components/LoadingOverlay';
 import { prepareImageForUpload, persistImage } from '../image';
-import { scanHealth, scanFood, pingServer } from '../api';
+import { scanHealth, scanFood, pingServer, pushCloudScan } from '../api';
 import { getSettings, saveScan, uid } from '../storage';
 import { colors, gradients, radii, shadow3D } from '../theme';
 
@@ -75,6 +75,9 @@ export default function ScannerScreen({ route, navigation, mode: modeProp }) {
       };
       if (settings.saveHistory !== false) {
         record = await saveScan(record);
+      }
+      if (settings.syncEnabled) {
+        pushCloudScan(record).catch(() => {});
       }
 
       navigation.replace(

@@ -1,8 +1,9 @@
 import { API_BASE_URL } from './config';
+import { getUserId } from './storage';
 
-async function request(path, body) {
+async function request(path, body, method = 'POST') {
   const res = await fetch(`${API_BASE_URL}${path}`, {
-    method: 'POST',
+    method,
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
   });
@@ -32,4 +33,22 @@ export async function pingServer() {
   } catch (e) {
     return false;
   }
+}
+
+export async function pushCloudScan(scan) {
+  const userId = await getUserId();
+  const data = await request('/api/sync/push', { userId, scan });
+  return data.synced === true;
+}
+
+export async function fetchCloudHistory() {
+  const userId = await getUserId();
+  const res = await fetch(
+    `${API_BASE_URL}/api/sync/history?userId=${encodeURIComponent(userId)}`
+  );
+  const data = await res.json().catch(() => ({}));
+  if (data.ok === true && Array.isArray(data.scans)) {
+    return data.scans;
+  }
+  throw new Error(data.error || 'Cloud sync unavailable');
 }

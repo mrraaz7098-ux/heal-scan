@@ -13,7 +13,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import ScreenBackground from '../components/ScreenBackground';
-import { clearHistory, deleteScan, getHistory } from '../storage';
+import { clearHistory, deleteScan, getHistory, getSettings } from '../storage';
+import { fetchCloudHistory } from '../api';
 import { colors, radii, spacing } from '../theme';
 
 const FILTERS = ['All', 'Health', 'Food'];
@@ -25,7 +26,23 @@ export default function HistoryScreen({ navigation }) {
 
   useFocusEffect(
     useCallback(() => {
-      getHistory().then(setScans);
+      (async () => {
+        const local = await getHistory();
+        setScans(local);
+
+        const settings = await getSettings();
+        if (!settings.syncEnabled) return;
+
+        try {
+          const cloud = await fetchCloudHistory();
+          const byId = new Map(local.map((s) => [s.id, s]));
+          cloud.forEach((c) => {
+            if (!byId.has(c.id)) byId.set(c.id, c);
+          });
+          const merged = [...byId.values()].sort((a, b) => b.createdAt - a.createdAt);
+          setScans(merged);
+        } catch (e) {}
+      })();
     }, [])
   );
 
