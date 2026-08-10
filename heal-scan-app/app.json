@@ -50,6 +50,9 @@
           "photosPermission": "Heal Scan uses your photo library to analyze images you upload."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "apiBaseUrl": ""
+    }
   }
 }

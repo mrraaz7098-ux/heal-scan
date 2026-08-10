@@ -13,11 +13,23 @@ function getDevHost() {
   return null;
 }
 
+function getConfiguredBaseUrl() {
+  try {
+    const url = Constants.expoConfig?.extra?.apiBaseUrl;
+    if (url && typeof url === 'string' && url.trim()) {
+      return url.replace(/\/+$/, '');
+    }
+  } catch (e) {}
+  return null;
+}
+
+const configured = getConfiguredBaseUrl();
 const devHost = getDevHost();
 
 export const API_BASE_URL =
-  Platform.OS === 'web'
+  configured ||
+  (Platform.OS === 'web'
     ? `http://localhost:${DEFAULT_PORT}`
     : devHost
       ? `http://${devHost}:${DEFAULT_PORT}`
-      : `http://localhost:${DEFAULT_PORT}`;
+      : `http://localhost:${DEFAULT_PORT}`);
