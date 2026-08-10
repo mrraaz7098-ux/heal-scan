@@ -1,0 +1,30 @@
+# Dependencies
+node_modules/
+
+# Expo
+.expo/
+dist/
+dist-test/
+web-build/
+
+# Native build output
+heal-scan-app/android/
+heal-scan-app/ios/
+
+# Secrets
+.env
+.env.*
+!.env.example
+heal-scan-server/firebase-service-account*.json
+*.p8
+*.p12
+
+# Logs
+*.log
+npm-debug.*
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
