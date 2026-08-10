@@ -8,12 +8,28 @@ function init() {
   if (attempted) return db;
   attempted = true;
 
+  const projectId = process.env.FIREBASE_PROJECT_ID;
+  const inlineJson = process.env.FIREBASE_SERVICE_ACCOUNT_JSON;
   const serviceAccountPath =
     process.env.FIREBASE_SERVICE_ACCOUNT ||
     path.join(__dirname, '..', 'firebase-service-account.json');
-  const projectId = process.env.FIREBASE_PROJECT_ID;
 
-  if (!projectId || !fs.existsSync(serviceAccountPath)) {
+  if (!projectId) {
+    return null;
+  }
+
+  let serviceAccount = null;
+  if (inlineJson) {
+    try {
+      serviceAccount = JSON.parse(inlineJson);
+    } catch (e) {
+      console.error('FIREBASE_SERVICE_ACCOUNT_JSON is not valid JSON:', e.message);
+    }
+  } else if (fs.existsSync(serviceAccountPath)) {
+    serviceAccount = require(serviceAccountPath);
+  }
+
+  if (!serviceAccount) {
     return null;
   }
 
@@ -21,7 +37,7 @@ function init() {
     const admin = require('firebase-admin');
     if (admin.apps.length === 0) {
       admin.initializeApp({
-        credential: admin.credential.cert(serviceAccountPath),
+        credential: admin.credential.cert(serviceAccount),
         projectId,
       });
     }
